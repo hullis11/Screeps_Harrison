@@ -1,7 +1,7 @@
 const roleHarvester = {
     run(creep: Creep): void {
 
-        if(creep.store[RESOURCE_ENERGY] === 0) {
+        if(creep.store[RESOURCE_ENERGY] < 50) {
 
             const sources = creep.room.find(FIND_SOURCES);
 

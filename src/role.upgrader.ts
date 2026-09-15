@@ -1,6 +1,6 @@
 const roleUpgrader = {
     run(creep: Creep): void {
-        if(creep.store[RESOURCE_ENERGY] == 0) {
+        if(creep.store[RESOURCE_ENERGY] === 0) {
 
             const closestContainer = creep.pos.findClosestByPath(FIND_STRUCTURES,{
 
@@ -9,7 +9,7 @@ const roleUpgrader = {
                     structure.structureType == STRUCTURE_CONTAINER &&
                     (structure as StructureContainer).store[RESOURCE_ENERGY] > 0
             });
-            if(closestContainer && (closestContainer as StructureContainer).store[RESOURCE_ENERGY]>50){
+            if(closestContainer && (closestContainer as StructureContainer).store[RESOURCE_ENERGY]>49){
                 if(creep.withdraw(closestContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
                  creep.moveTo(closestContainer)
                 };
@@ -22,7 +22,7 @@ const roleUpgrader = {
             }
             }
 
-        else if(creep.store[RESOURCE_ENERGY] === 50){
+        else{
             if(creep.room.controller){
             if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(creep.room.controller);

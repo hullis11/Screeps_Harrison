@@ -16,7 +16,10 @@ const roleBuilder = {
             const targets = creep.room.find(FIND_CONSTRUCTION_SITES);
             // if target isnt in range, move to target
             if(targets.length) {
-                if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
+                if(creep.pos.inRangeTo(targets[0], 2)){
+                creep.build(targets[0]);
+                }
+                else{
                     creep.moveTo(targets[0], {visualizePathStyle: {stroke: '#ffffff'}});
                 }
             }

@@ -5,7 +5,7 @@ const roleHauler = {
 const closestContainer = creep.pos.findClosestByPath(FIND_STRUCTURES, {
     filter: (structure) =>
         structure.structureType == STRUCTURE_CONTAINER &&
-        structure.store[RESOURCE_ENERGY] > 50
+        structure.store[RESOURCE_ENERGY] > 49
 });
 
 // Draw energy from nearest container
