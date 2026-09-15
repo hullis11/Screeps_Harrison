@@ -92,10 +92,10 @@ if(harvRatio <= 0.3){
 
 
 // Else-if statement so builders get next priority
-      else if(constructionSites.length > 0 && buildRatio <= 0.3) {
+      else if(constructionSites.length > 0 && buildRatio <= 0.5) {  // changed to .5 to up builder amount,
+                                                                    // will need to change back later
   const builderName = "Builder" + Game.time;
 
-  // spawn creep with the three body parts work carry move
   spawn.spawnCreep([WORK, CARRY, MOVE], builderName,{
     // setting memory for when creep is born
     memory: {
@@ -105,12 +105,13 @@ if(harvRatio <= 0.3){
       building: true
     }
   });
+
  console.log("Spawning:" + builderName); // will print spawning and name in console, end spawn fxn
 }
+
+  //Else-if statement for upgraders to get next priority
     else if(upgradeRatio <= 0.4){
   const upgraderName = "Upgrader" + Game.time;
-
-
 
   spawn.spawnCreep([WORK, CARRY, MOVE], upgraderName, {
     memory: {
@@ -123,6 +124,9 @@ if(harvRatio <= 0.3){
   console.log("Spawning:" + upgraderName);
 }
 
+
+  // else-if statement so haulers get next priority
+  // setup to have same number of haulers as containers to avoid congestion
   else if(haulers.length < numContainer){
 const haulerName = "Hauler" + Game.time;
 
@@ -162,13 +166,16 @@ for (const name in Game.creeps) {
   }
 }
 
-
-// Log the number of each in console
+// Log the number of each role in console
 console.log((_.filter(Game.creeps, (creep) => creep.memory.role === 'harvester').length), 'Harvesters');
 console.log((_.filter(Game.creeps, (creep) => creep.memory.role === 'builder').length), 'Builders');
 console.log((_.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader').length), 'Upgraders');
 
 }); // THESE CLOSE THE EXPORT LOOP, KEEP AT BOTTOM
+
+
+
+
 
 
 

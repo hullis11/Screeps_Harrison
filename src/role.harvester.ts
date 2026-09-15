@@ -17,15 +17,14 @@ const roleHarvester = {
             const closestContainer = creep.pos.findClosestByPath(FIND_STRUCTURES,{
                 filter: (structure) =>
                     structure.structureType == STRUCTURE_CONTAINER &&
-                    structure.store.getFreeCapacity() > 50              // NOTE: will need to change once capacity increases
+                    structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0
             });
 
-
+            // if closest container exists, transfer to closest container
             if(closestContainer){
-
                 if(creep.transfer(closestContainer, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
                     creep.moveTo(closestContainer, {visualizePathStyle: { stroke: '#ffffff' }});
-                }}}
+                }}
 
         else {
 
@@ -33,8 +32,7 @@ const roleHarvester = {
 
 // filter for either extensions, spawns or towers AND capacity for energy is greater than zero
                 filter: (structure) => {
-                    return (structure.structureType == STRUCTURE_EXTENSION ||
-                        structure.structureType == STRUCTURE_SPAWN ||
+                    return (structure.structureType == STRUCTURE_SPAWN ||
                         structure.structureType == STRUCTURE_TOWER) &&
                         structure.store.getFreeCapacity(RESOURCE_ENERGY) > 0;
                 }
@@ -48,6 +46,7 @@ const roleHarvester = {
             }
         }
     }
+}
 };
 
 

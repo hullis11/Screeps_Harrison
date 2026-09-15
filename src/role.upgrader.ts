@@ -22,13 +22,13 @@ const roleUpgrader = {
             }
             }
 
-        else{
+        else if(creep.store[RESOURCE_ENERGY] === 50){
             if(creep.room.controller){
             if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
                 creep.moveTo(creep.room.controller);
             }
+        }}
         }
-        }
-    }};
+    };
 
 export default roleUpgrader;
