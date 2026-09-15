@@ -2,6 +2,7 @@ import { ErrorMapper } from "utils/ErrorMapper";
 import roleHarvester from './role.harvester';
 import roleBuilder from './role.builder';
 import roleUpgrader from './role.upgrader';
+import roleHauler from './role.hauler';
 
 
 declare global {
@@ -24,6 +25,9 @@ declare global {
     room: string;
     working: boolean;
     building: boolean;
+    sourceId?: string;
+    container?: string;
+    destination?: string;
   }
 
 }
@@ -50,21 +54,25 @@ const spawn = Game.spawns["Spawn1"];  // create variable for spawning
 
 
 
-////////////////        1) Spawn harvesters       ////////////////
+// 1) Define variables before spawning
+const harvesters = _.filter(Game.creeps, (creep) => creep.memory.role === "harvester");
+const builders = _.filter(Game.creeps, (creep) => creep.memory.role === "builder");
+const upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === "upgrader");
+const haulers = _.filter(Game.creeps, (creep) => creep.memory.role === "hauler");
+const constructionSites = spawn.room.find(FIND_CONSTRUCTION_SITES);
+
+// Define variable ratios
+const totalCreeps = Object.keys(Game.creeps).length;
+const harvRatio = harvesters.length/totalCreeps;
+const buildRatio = builders.length/totalCreeps;
+const upgradeRatio = upgraders.length/totalCreeps;
+const numContainer = spawn.room.find(FIND_STRUCTURES, {filter: (structure) =>
+                  structure.structureType == STRUCTURE_CONTAINER}).length;
 
 
-
-
-
-
-// create harvesters variable, filter the collection of game.creeps, test function for each creep
-// see if the memory.role property strictly equals harvester
-const harvesters = _.filter(Game.creeps, (creep) => creep.memory.role === "harvester")
-
-// create an if statement to spawn new creeps
-
-//if theres less than 2 harvesters, and spawn var exists, and the spawning attribute isnt active
-if(harvesters.length <= 2 && spawn && !spawn.spawning){
+//Bundled if/elseif statements for spawning hierarchy
+if (spawn && !spawn.spawning){
+if(harvRatio <= 0.3){
   const newName = "Harvester" + Game.time;
 
   // spawn creep with the three body parts work carry move
@@ -79,39 +87,12 @@ if(harvesters.length <= 2 && spawn && !spawn.spawning){
       building: false
     }
   });
-
-// add else-if statements so harvesters will have first priority
-      else if(builders.length<1){
-
-}
-
-      else if(upgraders.length < 5){
-
-}
   console.log("Spawning:" + newName); // will print spawning and name in console, end spawn fxn
 }
 
 
-
-
-
-///////////////////    2) Spawn builders     ////////////////////////////
-
-
-
-
-
-
-// setup builders variable
-const builders = _.filter(Game.creeps, (creep) => creep.memory.role === "builder")
-
-// setup construction sites variable for use later
-const constructionSites = spawn.room.find(FIND_CONSTRUCTION_SITES)
-
-// setup if statement for spawning builders if const sites are present
-// include other criteria besides length, make sure spawn is there and isnt busy and there aren't already a
-// ton of builders
-if(constructionSites.length > 0 && builders.length <2 && spawn && !spawn.spawning) {
+// Else-if statement so builders get next priority
+      else if(constructionSites.length > 0 && buildRatio <= 0.3) {
   const builderName = "Builder" + Game.time;
 
   // spawn creep with the three body parts work carry move
@@ -124,18 +105,12 @@ if(constructionSites.length > 0 && builders.length <2 && spawn && !spawn.spawnin
       building: true
     }
   });
-  console.log("Spawning:" + builderName); // will print spawning and name in console, end spawn fxn
+ console.log("Spawning:" + builderName); // will print spawning and name in console, end spawn fxn
 }
-
-
-//////////////// 3. SPAWN UPGRADERS ///////////////
-
-// setup upgrader variable
-const upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === "upgrader")
-
-// spawn an upgrader, will give better criteria later
-if(upgraders.length < 1 && spawn && !spawn.spawning){
+    else if(upgradeRatio <= 0.4){
   const upgraderName = "Upgrader" + Game.time;
+
+
 
   spawn.spawnCreep([WORK, CARRY, MOVE], upgraderName, {
     memory: {
@@ -143,32 +118,26 @@ if(upgraders.length < 1 && spawn && !spawn.spawning){
       room: spawn.room.name,
       working: true,
       building: false
-
-    }
+        }
   });
   console.log("Spawning:" + upgraderName);
 }
 
-/////////////             Construct Tower          ////////////////
-    // this ID is returning specifically a structure tower
-    const tower = Game.getObjectById('TOWER_ID' as Id<HasId>) as StructureTower;
-    if(tower) {
-        const closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-            filter: (structure) => structure.hits < structure.hitsMax
-        });
-        if(closestDamagedStructure) {
-            tower.repair(closestDamagedStructure);
-        }
+  else if(haulers.length < numContainer){
+const haulerName = "Hauler" + Game.time;
 
-        const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
-        if(closestHostile) {
-            tower.attack(closestHostile);
-        }
-    }
+spawn.spawnCreep([WORK, CARRY, MOVE], haulerName, {
+memory: {
+  role: "hauler",
+  room: spawn.room.name,
+  working: true,
+  building: false
+    }}
 
+  )
+};
 
-
-
+};
 
 
 
@@ -186,11 +155,73 @@ for (const name in Game.creeps) {
 
   if(creep.memory.role === "upgrader"){
     roleUpgrader.run(creep);
+  };
+
+  if(creep.memory.role === "hauler"){
+    roleHauler.run(creep)
   }
 }
+
+
+// Log the number of each in console
+console.log((_.filter(Game.creeps, (creep) => creep.memory.role === 'harvester').length), 'Harvesters');
+console.log((_.filter(Game.creeps, (creep) => creep.memory.role === 'builder').length), 'Builders');
+console.log((_.filter(Game.creeps, (creep) => creep.memory.role === 'upgrader').length), 'Upgraders');
 
 }); // THESE CLOSE THE EXPORT LOOP, KEEP AT BOTTOM
 
 
 
 
+
+/////////////             Construct Tower          ////////////////
+    // this ID is returning specifically a structure tower
+ //   const tower = Game.getObjectById('TOWER_ID' as Id<HasId>) as StructureTower;
+  //  if(tower) {
+   //     const closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
+    //        filter: (structure) => structure.hits < structure.hitsMax
+   //     });
+    //    if(closestDamagedStructure) {
+     //       tower.repair(closestDamagedStructure);
+      //  }
+
+ //       const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
+ //       if(closestHostile) {
+ //           tower.attack(closestHostile);
+ //       }
+ //   }
+
+
+
+  ////////////       ASSIGNING SPECIFIC SOURCES TO EACH CREEP AT SPAWN       /////////
+  // const sources = spawn.room.find(FIND_SOURCES);
+
+  // for the source within this specific map
+  // const sourceCounts = sources.map((source) => {
+  // return where the creeps assigned source ID is the same as the ID of the source currently
+  // being evaluated in this iteration
+  // return _.filter(Game.creeps, (creep) => creep.memory.sourceId === source.id).length
+ // });
+
+  // within the list of sources
+ // const leastCrowdedSourceId = sources[
+  // find the index(exact position) of the minimum of the string of sourceCounts
+  //  sourceCounts.indexOf(Math.min(...sourceCounts))
+  //].id
+
+
+      // construct sources list
+ // const sources = spawn.room.find(FIND_SOURCES);
+//
+  // for the source within this specific map
+//  const sourceCounts = sources.map((source) => {
+  // return where the creeps assigned source ID is the same as the ID of the source currently
+  // being evaluated in this iteration
+ //  return _.filter(Game.creeps, (creep) => creep.memory.sourceId === source.id).length
+ // });
+
+  // within the list of sources
+////  const leastCrowdedSourceId = sources[
+  // find the index(exact position) of the minimum of the string of sourceCounts
+//    sourceCounts.indexOf(Math.min(...sourceCounts))
+//  ].id
