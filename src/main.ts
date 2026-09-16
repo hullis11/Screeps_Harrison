@@ -4,6 +4,7 @@ import roleBuilder from './role.builder';
 import roleUpgrader from './role.upgrader';
 import roleHauler from './role.hauler';
 import spawnCreeps from './spawn.creep';
+import structureTowers from './structure.tower'
 
 
 declare global {
@@ -54,6 +55,16 @@ const spawn = Game.spawns["Spawn1"];  // create variable for spawning
 spawnCreeps.spawn(spawn);
 
 
+// constructing a list of the towers that exist in this current loop
+//const towers: StructureTower[] = _.filter(Game.structures, (structure) =>
+ // {
+//      return structure.structureType === STRUCTURE_TOWER;
+//}) as StructureTower[];
+
+
+// structureTower.run(towers);
+
+
 //////////////////// FINAL STEP: tell everyone to do as theyre supposed to /////////////////
 for (const name in Game.creeps) {
   const creep = Game.creeps[name];
@@ -72,8 +83,8 @@ for (const name in Game.creeps) {
 
   if(creep.memory.role === "hauler"){
     roleHauler.run(creep)
-  }
-}
+  };
+};
 
 // Log the number of each role in console
 console.log("Energy:", spawn.room.energyAvailable);
@@ -93,22 +104,6 @@ console.log((_.filter(Game.creeps, (creep) => creep.memory.role === 'hauler').le
 
 
 
-/////////////             Construct Tower          ////////////////
-    // this ID is returning specifically a structure tower
- //   const tower = Game.getObjectById('TOWER_ID' as Id<HasId>) as StructureTower;
-  //  if(tower) {
-   //     const closestDamagedStructure = tower.pos.findClosestByRange(FIND_STRUCTURES, {
-    //        filter: (structure) => structure.hits < structure.hitsMax
-   //     });
-    //    if(closestDamagedStructure) {
-     //       tower.repair(closestDamagedStructure);
-      //  }
-
- //       const closestHostile = tower.pos.findClosestByRange(FIND_HOSTILE_CREEPS);
- //       if(closestHostile) {
- //           tower.attack(closestHostile);
- //       }
- //   }
 
 
 

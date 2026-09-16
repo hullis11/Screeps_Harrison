@@ -45,6 +45,12 @@ const roleHarvester = {
                 }
             }
         }
+    };
+
+    // Construct number of harvesters variable for dynamic spawning
+    function numHarvesters(room:Room): number {
+        const sources = room.find(FIND_SOURCES);
+        return sources.length*3;
     }
 }
 };

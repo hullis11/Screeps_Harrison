@@ -1,5 +1,6 @@
 const roleUpgrader = {
     run(creep: Creep): void {
+
         if(creep.store[RESOURCE_ENERGY] === 0) {
 
             const closestContainer = creep.pos.findClosestByPath(FIND_STRUCTURES,{

@@ -2,12 +2,26 @@ const spawnCreeps = {
     spawn(spawn:StructureSpawn): void {
 
 
-// 1) Define variables before spawning
+// Define variables before spawning
 const harvesters = _.filter(Game.creeps, (creep) => creep.memory.role === "harvester");
 const builders = _.filter(Game.creeps, (creep) => creep.memory.role === "builder");
 const upgraders = _.filter(Game.creeps, (creep) => creep.memory.role === "upgrader");
 const haulers = _.filter(Game.creeps, (creep) => creep.memory.role === "hauler");
+
+// For dynamic spawning
+const sources = spawn.room.find(FIND_SOURCES);
+
 const constructionSites = spawn.room.find(FIND_CONSTRUCTION_SITES);
+let constRemain = 0;
+
+constructionSites.forEach((site: ConstructionSite) => {
+      constRemain += site.progressTotal - site.progress;
+    }
+  );
+
+console.log(constRemain, "Construction Remaining");
+
+
 
 // Define variable ratios
 const totalCreeps = Object.keys(Game.creeps).length;
@@ -20,7 +34,7 @@ const numContainer = spawn.room.find(FIND_STRUCTURES, {filter: (structure) =>
 
 //Bundled if/elseif statements for spawning hierarchy
 if (spawn && !spawn.spawning){
-    if(harvRatio <= 0.3){
+    if(harvesters.length <= (sources.length * 3)){
         const newName = "Harvester" + Game.time;
 
   // spawn creep with the three body parts work carry move
@@ -40,8 +54,8 @@ if (spawn && !spawn.spawning){
 
 
 // Else-if statement so builders get next priority
-      else if(constructionSites.length > 0 && buildRatio <= 0.3) {  // changed to .5 to up builder amount,
-                                                                    // will need to change back later
+      else if(constructionSites.length > 0 && (builders.length < Math.ceil(constRemain / 1000))) {
+
   const builderName = "Builder" + Game.time;
 
   spawn.spawnCreep([WORK, CARRY, MOVE], builderName,{
