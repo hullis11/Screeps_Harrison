@@ -55,14 +55,32 @@ const spawn = Game.spawns["Spawn1"];  // create variable for spawning
 spawnCreeps.spawn(spawn);
 
 
-// constructing a list of the towers that exist in this current loop
-//const towers: StructureTower[] = _.filter(Game.structures, (structure) =>
- // {
-//      return structure.structureType === STRUCTURE_TOWER;
-//}) as StructureTower[];
+
+ // constructing an array of structures
+ const structureKeys:string[] = Object.keys(Game.structures);
+ const structures: Structure<StructureConstant>[] = structureKeys.map((key:string) => Game.structures[key])
+
+ // constructing a variable that will make a list of all spawns/towers
+ const spawns: StructureSpawn[] = [];
+ const towers: StructureTower[] = [];
+
+ // for every structure in structures, if its a spawn push it to the spawn var and same for tower
+ for (const struct:Structure<StructureConstant> of structures) {
+  if (struct.structureType === STRUCTURE_SPAWN) {
+    spawns.push(struct as StructureSpawn)
+  };
+
+  if(struct.structureType === STRUCTURE_TOWER){
+    towers.push(struct as StructureTower)
+  };
+ }
+
+spawns.forEach(spawn: StructureSpawn => {
+  spawnCreeps.spawn(spawn)
+});
 
 
-// structureTower.run(towers);
+structureTower.run(towers);
 
 
 //////////////////// FINAL STEP: tell everyone to do as theyre supposed to /////////////////
@@ -103,39 +121,10 @@ console.log((_.filter(Game.creeps, (creep) => creep.memory.role === 'hauler').le
 
 
 
+// Commands for uploading to github
+    // git add .
+    // git commit -m "Note here"
+    // git push origin main
+    //git remote -v
 
 
-
-
-  ////////////       ASSIGNING SPECIFIC SOURCES TO EACH CREEP AT SPAWN       /////////
-  // const sources = spawn.room.find(FIND_SOURCES);
-
-  // for the source within this specific map
-  // const sourceCounts = sources.map((source) => {
-  // return where the creeps assigned source ID is the same as the ID of the source currently
-  // being evaluated in this iteration
-  // return _.filter(Game.creeps, (creep) => creep.memory.sourceId === source.id).length
- // });
-
-  // within the list of sources
- // const leastCrowdedSourceId = sources[
-  // find the index(exact position) of the minimum of the string of sourceCounts
-  //  sourceCounts.indexOf(Math.min(...sourceCounts))
-  //].id
-
-
-      // construct sources list
- // const sources = spawn.room.find(FIND_SOURCES);
-//
-  // for the source within this specific map
-//  const sourceCounts = sources.map((source) => {
-  // return where the creeps assigned source ID is the same as the ID of the source currently
-  // being evaluated in this iteration
- //  return _.filter(Game.creeps, (creep) => creep.memory.sourceId === source.id).length
- // });
-
-  // within the list of sources
-////  const leastCrowdedSourceId = sources[
-  // find the index(exact position) of the minimum of the string of sourceCounts
-//    sourceCounts.indexOf(Math.min(...sourceCounts))
-//  ].id
