@@ -1,9 +1,9 @@
     // An object called structureTowers will have a function named run,
     // which takes 1 input(towers) of type StructureTower[array/list]
-const structureTowers: {
+const structureTowers = {
     run(towers: StructureTower[]): void {
 
-  const tower = Game.getObjectById(towerId) as StructureTower;
+  for (const tower of towers){
 
     // if tower exists
     if(tower) {
@@ -26,6 +26,7 @@ const structureTowers: {
             tower.attack(closestHostile);
         }
     }
+}
 
 
 

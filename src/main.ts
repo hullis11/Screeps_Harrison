@@ -65,7 +65,7 @@ spawnCreeps.spawn(spawn);
  const towers: StructureTower[] = [];
 
  // for every structure in structures, if its a spawn push it to the spawn var and same for tower
- for (const struct:Structure<StructureConstant> of structures) {
+ for (const struct of structures) {
   if (struct.structureType === STRUCTURE_SPAWN) {
     spawns.push(struct as StructureSpawn)
   };
@@ -73,14 +73,14 @@ spawnCreeps.spawn(spawn);
   if(struct.structureType === STRUCTURE_TOWER){
     towers.push(struct as StructureTower)
   };
- }
+ };
 
-spawns.forEach(spawn: StructureSpawn => {
+spawns.forEach((spawn: StructureSpawn) => {
   spawnCreeps.spawn(spawn)
 });
 
 
-structureTower.run(towers);
+structureTowers.run(towers);
 
 
 //////////////////// FINAL STEP: tell everyone to do as theyre supposed to /////////////////
